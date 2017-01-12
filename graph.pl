@@ -12,9 +12,9 @@
     % 1.    An acyclic directed graph is represented by the following facts:
     
     % ?X, ?Z can be given or be unbound variables
-    path( X, Z ):-
+    path( X, Z ) :-
       arc( X, Z ).
-    path( X, Z ):-
+    path( X, Z ) :-
       arc( X, Y ), path( Y, Z ).
 
     arc( a, b ).
@@ -34,5 +34,15 @@
     odd(X) :-
      plus(Y, s(Y), X). 
 
+    % ones_zeros( ?X )
+    ones_zeros([]).
+    ones_zeros([0 | T]) :-
+      ones_zeros(T).
+    ones_zeros([1 | T]) :-
+      ones_zeros(T).
 
-
+    % hasdups(?X)
+    hasdups([X | T]) :- 
+      member(X, T).
+    
+    prod([X | T], P) :- TODO
