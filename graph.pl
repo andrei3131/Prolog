@@ -53,6 +53,16 @@
     % L2 is a sublist of list L1 starting from pos N
     % Count positions 1..N
     contains(L1, L2, N) :-
-      append(YS, L2, L3), append(L3, _1, L1), write(_1),length(YS, M), N is M + 1.
-      
-      
+      append(L3, _1, L1), append(YS, L2, L3), length(YS, M), N is M + 1.
+    
+    sorting_add_poly(P1, P2, P) :-
+  	sort(P1, P1sorted), sort(P2, P2sorted), add_poly(P1sorted, P2sorted, P).      
+
+    add_poly([], P, P).
+    add_poly(P, [], P).
+    add_poly([(C1, I1) | PS], [(C2, I2) | PSS],[ (C, I1) | P]) :-
+          I1 =:= I2, C is C1 + C2, add_poly(PS, PSS, P).
+    add_poly([(C1, I1) | PS], [(C2, I2) | PSS], [ (C1, I1) | P]) :-
+	  I2 < I1, add_poly(PS, [(C2, I2) | PSS], P).
+    add_poly([(C1, I1) | PS], [(C2, I2) | PSS], [(C2, I2) | P]) :-
+          I1 < I2, add_poly([(C1, I1) | PS], PSS, P). 			  
