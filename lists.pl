@@ -55,21 +55,59 @@
   node(n).
   node(p).
   node(t).
-  arc(b, g).
-  arc(g, b).
-  arc(m, n).
-  arc(n, m).
-  arc(n, t).
-  arc(t, n).
-  arc(t, p).
-  arc(p ,t).
-  arc(p, m).
-  arc(m, p).
+ 
+  edge(na, t).
+  edge(t, p).
+  edge(n, m).
+  edge(m, p).
+  edge(g, b).
 
   connected_parts(Components) :-
     findall([N], node(N), Initial),
     join_components(Initial, Components).
+/*  
+  join_components(Now, Now) :-
+    \+ join_two_components(Now, _).
+  join_components(Now, Components) :-
+    join_two_components(Now, Reduced),
+    join_components(Reduced, Components).
+*/  
+  join_two_components(Now, [Combined | Rest]) :-
+    pick_pair(Now, Comp1, Comp2, Rest),
+    member(X, Comp1),
+    member(Y, Comp2),
+    (edge(X, Y); edge(Y, X)),
+    merge_lists(Comp1, Comp2, Combined).
+
+  pick_pair(List, X, Y, Rest) :-
+    select(X, List, Rem),
+    select(Y, Rem, Rest).
   
-  join_components([], []).
-  join_components([S | SS] , [ C | CS]) :-
-    findall(X, arc(X))  % Use cut somewhere
+  % select(?Element, ?List, ?List2) (As implemented in Sicstus)
+  % The result of removing Element from List is List2
+  % Implementation is as follows:
+
+  select(X, [X | Y], Y).
+  select(X, [U | Y], [U | Z]) :-
+    select(X, Y, Z).
+ 
+  % Merge two ordered lists
+  merge_lists(Comp1, Comp2, Merged) :-
+    append(Comp1, Comp2, Both),
+    sort(Both, Merged).	      
+
+
+  % More efficient
+  join_components(Initial, Components) :-
+    join_components(go, Initial, Components).
+       
+  join_components(stop, Now, Now).
+  join_components(go, Now, Components) :-
+    (join_two_components(Now, Reduced)
+     ->
+     Next = go
+     ;
+     Next = stop, Reduced = Now
+    ), join_components(Next, Reduced, Components).
+
+
